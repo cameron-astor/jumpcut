@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>OpenJumpCut</title>
+    <link rel="stylesheet" type="text/css" href="style.css">
+</head>
+<body>
+
+    <div class="jumpcutoption">
+        <h4>Silence Cutoff</h4>
+        <input type="range" id="silenceCutoff" min="-100" max="-1" value="-50">
+        <input type="number" class="number-input" min="-100" max="-1" value="-50">
+        <h4>dB</h4>
+    </div>
+    
+    <div class="jumpcutoption">
+        <h4>Remove Silences Over</h4>
+        <input type="range" id="removeOver" min="0.1" max="2" value="0.5" step="0.1">
+        <input type="number" class="number-input" min="0.1" value="0.5">
+        <h4>seconds</h4>
+    </div>
+    
+    <div class="jumpcutoption">
+        <h4>Keep Segments Over</h4>
+        <input type="range" id="keepOver" min="0.1" max="2" value="0.5" step="0.1">
+        <input type="number" class="number-input" min="0.1" value="0.5">
+        <h4>seconds</h4>
+    </div>
+    
+    <div class="jumpcutoption">
+        <h4>Padding</h4>
+        <input type="range" id="padding" min="0.1" max="2" value="0.5" step="0.1">
+        <input type="number" class="number-input" min="0.1" value="0.5">
+        <h4>seconds</h4>
+    </div>
+
+    <button id="jumpcutbutton" onclick="runJumpCut()">Run Jump Cut</button>
+
+    
+    <script type="text/javascript" src="CSInterface.js"></script>
+    <script type="text/javascript" src="index.js"></script>
+</body>
+</html>

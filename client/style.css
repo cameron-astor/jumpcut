@@ -1,0 +1,17 @@
+h4 {
+    color: white;
+}
+
+.jumpcutoption {
+    display: flex;
+    align-items: center; /* Aligns items vertically in the center */
+  }
+  
+  .jumpcutoption h4 {
+    white-space: nowrap; /* Ensures the label doesn't wrap */
+  }
+  
+  .number-input {
+    width: 50px;
+  }
+  

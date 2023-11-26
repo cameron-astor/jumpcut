@@ -1,0 +1,17 @@
+# Python
+*.pyc
+__pycache__/
+*.pyo
+*.pyd
+
+# PyInstaller
+build/
+*.spec
+
+# Logs and Debug files
+*.log
+*.debug
+
+# Media files
+*.mp3
+*.mp4
