@@ -5,8 +5,9 @@ function jumpCutActiveSequence(silences, offsets) {
 
     app.enableQE();
 
-    silences = eval(silences);
-    offsets = eval(offsets); // convert inputs back to arrays
+    silences = eval(silences); // convert inputs back to arrays
+
+    var MAKE_BACKUP = false;
 
     var SEQUENCE = app.project.activeSequence;
     var QE_SEQUENCE = qe.project.getActiveSequence();
@@ -16,7 +17,9 @@ function jumpCutActiveSequence(silences, offsets) {
     var time = new Time();
 
     // Make a backup of the sequence before initiating jumpcuts.
-    SEQUENCE.clone();
+    if (MAKE_BACKUP) {
+        SEQUENCE.clone();
+    }
 
     // Perform jump cuts with razor tool
     // This requires the QE version of the sequence.
@@ -106,62 +109,9 @@ function getNonEmptyTrackItems(type, SEQUENCE, VIDEO_TRACK, AUDIO_TRACK) {
 
 // Get the file path of the clip that should be jump cut.
 // Currently this defaults to the first clip on the first video track.
-//
-// -- TODO --
-// Parameters for:
-// - Track
-// - Video or audio or both
 function getMediaPath() {
     var sequence = app.project.activeSequence;
     var track1 = sequence.videoTracks[0];
     clip = track1.clips[0];
     return clip.projectItem.getMediaPath();
 }
-
-
-// -- DEPRECATED --
-
-// Deprecated offsets logic
-// Recalculate non-empty clips (the remaining clips will correspond to the offsets)
-// try {
-//     nonEmptyTrackItems = getNonEmptyTrackItems("Video", SEQUENCE, VIDEO_TRACK, AUDIO_TRACK);
-//     nonEmptyAudioTrackItems = getNonEmptyTrackItems("Audio", SEQUENCE, VIDEO_TRACK, AUDIO_TRACK);       
-// } catch (error) {
-//     alert("Recalculate non-empty clips: " + error.message);
-// }
-
-// for (var i = 0; i < nonEmptyTrackItems.length; i++) {
-//         // 'Ripple delete' (it would be nice if the API's ripple delete function actually worked...)
-//         currentTrackItem = nonEmptyTrackItems[i];
-//         currentAudioTrackItem = nonEmptyAudioTrackItems[i];
-
-//         // Convert offset to timecode based on project and video properties
-//         time.seconds = offsets[i] * -1;
-//         var timecode = time.getFormatted(app.project.activeSequence.getSettings().videoFrameRate, app.project.activeSequence.getSettings().videoDisplayFormat); 
-
-//         currentTrackItem.move("-" + timecode);
-//         currentAudioTrackItem.move("-" + timecode);
-// }
-
-// QE version (returns a collection of QETrackItem)
-// Not currently used.
-// function getNonEmptyTrackItemsQE(type, VIDEO_TRACK, AUDIO_TRACK) {
-//     var result = [];
-//     if (type === "Video") {
-//         for (var i = 0; i < qe.project.getActiveSequence().getVideoTrackAt(VIDEO_TRACK).numItems; i++) {
-//             if (qe.project.getActiveSequence().getVideoTrackAt(VIDEO_TRACK).getItemAt(i).type === "Clip") {
-//                 result.push(qe.project.getActiveSequence().getVideoTrackAt(VIDEO_TRACK).getItemAt(i));
-//             }
-//         }
-//     } else if (type === "Audio") {
-//         for (var i = 0; i < qe.project.getActiveSequence().getAudioTrackAt(AUDIO_TRACK).numItems; i++) {
-//             if (qe.project.getActiveSequence().getAudioTrackAt(AUDIO_TRACK).getItemAt(i).type === "Clip") {
-//                 result.push(qe.project.getActiveSequence().getAudioTrackAt(AUDIO_TRACK).getItemAt(i));
-//             }
-//         }
-//     } else {
-//         alert("Invalid track type!");
-//     }
-
-//     return result;
-// }

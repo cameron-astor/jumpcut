@@ -36,10 +36,10 @@ async function runJumpCut() {
   }
 
   let silences = JSON.stringify(dataJSON['silences']);
-  let offsets = JSON.stringify(dataJSON['offsets']);
+  // let offsets = JSON.stringify(dataJSON['offsets']);
 
   try {
-    await runPremiereJumpCut(silences, offsets);
+    await runPremiereJumpCut(silences);
     alert("Success.");
   } catch (error) {
     alert("Failure executing jump cuts in Premiere.");
@@ -47,9 +47,9 @@ async function runJumpCut() {
 
 }
 
-async function runPremiereJumpCut(silences, offsets) {
+async function runPremiereJumpCut(silences) {
   return new Promise((resolve, reject) => {
-    csInterface.evalScript(`jumpCutActiveSequence("${silences}", "${offsets}")`, (result) => {
+    csInterface.evalScript(`jumpCutActiveSequence("${silences}")`, (result) => {
       if (result) {
         resolve(result);
       } else {
