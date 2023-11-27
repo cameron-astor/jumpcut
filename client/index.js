@@ -18,6 +18,7 @@ async function runJumpCut() {
   let jumpcutParams = getJumpcutParams();
   let jumpcutData = "";
 
+  // Run the Python script to calculate jump cut locations.
   try {
     jumpcutData = await asyncCallPythonJumpcut(EXE_PATH, mediaPath, jumpcutParams);
     alert("Python script successful.");
@@ -25,9 +26,7 @@ async function runJumpCut() {
     alert("Failure executing Python script: " + error);
   }
 
-  // fs.appendFileSync('C:/Program Files (x86)/Common Files/Adobe/CEP/extensions/jumpcut/log.txt', jumpcutData, 'utf8'); // log
-
-  // Prepare data to send to extend script
+  // Prepare data to send to ExtendScript.
   let dataJSON = ""
   try {
     dataJSON = JSON.parse(jumpcutData);
@@ -35,8 +34,13 @@ async function runJumpCut() {
     alert(error);
   }
 
+  // If no silences were returned, alert the user and exit.
+  if (dataJSON['silences'].length === 0) { 
+    alert("No silences detected.");
+    return;
+  }
+
   let silences = JSON.stringify(dataJSON['silences']);
-  // let offsets = JSON.stringify(dataJSON['offsets']);
 
   try {
     await runPremiereJumpCut(silences);

@@ -1,7 +1,5 @@
-// TODO
-// Make a backup of the sequence before initiating jumpcuts.
 
-function jumpCutActiveSequence(silences, offsets) {
+function jumpCutActiveSequence(silences) {
 
     app.enableQE();
 
@@ -35,7 +33,7 @@ function jumpCutActiveSequence(silences, offsets) {
         }
     }
 
-    // Remove silences and adjust clips by offsets
+    // Remove silences.
     // If silences begins at 0 seconds, start removing from element 0 of clips array. Otherwise, start from element 1.
     // Alternate until reaching the end.
     var startingIndex;

@@ -4,7 +4,10 @@ import os
 import json
 import logging
 
+# TODO 
+# Relative path here. The problem is that the script is called by Premiere which could be anywhere.
 logging.basicConfig(filename='C:\Program Files (x86)\Common Files\Adobe\CEP\extensions\jumpcut\jumpcutpy.log', filemode='w')
+logging.getLogger().setLevel(logging.INFO)
 
 parser = argparse.ArgumentParser()
 parser.add_argument("path")
@@ -29,6 +32,7 @@ if args.jumpcutparams: # If parameters are passed, overwrite the defaults.
 THRESHOLD = int(jumpcut_params['silenceCutoff'])
 PADDING = int(jumpcut_params['padding'])
 MIN_SILENCE_LENGTH = int(jumpcut_params['removeOver'])
+KEEP_OVER = int(jumpcut_params['keepOver'])
 
 # Other parameters not controlled by the GUI
 SEEK_STEP = 50
@@ -66,6 +70,24 @@ for i in range(len(silences)):
 
 # Remove silences that were padded out of existence
 silences = [s for idx, s in enumerate(silences) if idx not in to_remove]
+
+# Implement 'keep over' functionality. If the kept space between two silences is smaller than the keep over value,
+# combine them into one long silence.
+cleaned_silences = []
+for i in range(0, len(silences), 2):
+    if i + 1 < len(silences):
+        if silences[i+1][0] - silences[i][1] < KEEP_OVER:
+            cleaned_silences.append([silences[i][0], silences[i+1][1]])
+        else:
+            cleaned_silences.append(silences[i])
+            cleaned_silences.append(silences[i+1])
+    else:
+        cleaned_silences.append(silences[i])
+
+logging.info("Base silences: " + silences)   
+logging.info("Silences with 'Keep Over' applied: " + cleaned_silences)
+
+silences = cleaned_silences
 
 # Convert to seconds for Premiere
 silences = [[s[0]/1000, s[1]/1000] for s in silences]
