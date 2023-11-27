@@ -113,3 +113,7 @@ function getMediaPath() {
     clip = track1.clips[0];
     return clip.projectItem.getMediaPath();
 }
+
+function getClipsAndMedia() {
+    
+}
