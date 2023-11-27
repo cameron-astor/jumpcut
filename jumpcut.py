@@ -47,6 +47,10 @@ FILE_TYPE = file_extension
 audio = AudioSegment.from_file(FILE_PATH, FILE_TYPE)
 CLIP_LENGTH = len(audio)
 
+# TODO
+# Crop audio based on in and out times on the Premiere timeline.
+
+
 silences = []
 try:
     silences = silence.detect_silence(audio, min_silence_len=MIN_SILENCE_LENGTH, seek_step=SEEK_STEP, silence_thresh=THRESHOLD)
