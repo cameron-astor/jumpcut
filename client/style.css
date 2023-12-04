@@ -1,17 +1,65 @@
 h4 {
-    color: white;
+  color: white;
+  font-family: Verdana, Geneva, Tahoma, sans-serif; /* Change the font family */
 }
 
 .jumpcutoption {
-    display: flex;
-    align-items: center; /* Aligns items vertically in the center */
-  }
-  
-  .jumpcutoption h4 {
-    white-space: nowrap; /* Ensures the label doesn't wrap */
-  }
-  
-  .number-input {
-    width: 50px;
-  }
-  
+  display: flex;
+}
+
+h4 {
+  white-space: nowrap; /* Ensures the label doesn't wrap */
+}
+
+.headingdiv {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  padding-right: 10px; /* Adjust as needed for spacing */
+}
+
+.optionwrapper {
+  display: flex;
+}
+
+.optionwrapper h4 {
+  text-align: right;
+  justify-content: start; /* Aligns children (headingdiv and jumpcutoption) to the start */
+  margin-bottom: 10px; /* Adds space between the rows */
+}
+
+.number-input {
+  width: 50px;
+}
+
+input[type="range"] {
+  width: 100px;
+  background-color: #a02020;
+  margin: 20px;
+}
+
+.number-input {
+  color: #333;
+  background-color: #f0f0f0;
+  font-size: 12px;
+  font-family: Verdana, Geneva, Tahoma, sans-serif;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  padding: 10px;
+  margin: 5px;
+  width: 50px;
+}
+
+button {
+  background-color: #4c72af; /* Green */
+  border-radius: 12px; /* Rounded edges */
+  font-family: Verdana, Geneva, Tahoma, sans-serif;
+  border: 2px solid #f0f0f0; /* Subtle border */
+  color: white;
+  padding: 15px 32px;
+  text-align: center;
+  text-decoration: none;
+  font-size: 16px;
+  margin: 4px 2px;
+  cursor: pointer;
+}

@@ -87,12 +87,8 @@ async function asyncCallPythonJumpcut(exe_path, media_path, jumpcutParams) {
     media_path = path.normalize(media_path);
 
     // Call the Python jumpcut calculator
-    if (operating_system == "WIN") {
-      command_prompt = child_process.spawn(exe_path, [media_path, jumpcutParams]);
-    } else {
-      command_prompt = child_process.spawn('bash'); // TODO Unix-like invocation
-    }
-  
+    command_prompt = child_process.spawn(exe_path, [media_path, jumpcutParams]);
+
     let outputData = "";
 
     command_prompt.stdout.on('data', function (data) {

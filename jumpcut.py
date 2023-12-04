@@ -88,9 +88,6 @@ for i in range(0, len(silences), 2):
     else:
         cleaned_silences.append(silences[i])
 
-logging.info("Base silences: " + silences)   
-logging.info("Silences with 'Keep Over' applied: " + cleaned_silences)
-
 silences = cleaned_silences
 
 # Convert to seconds for Premiere

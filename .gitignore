@@ -3,6 +3,7 @@
 __pycache__/
 *.pyo
 *.pyd
+pythontests.py
 
 # PyInstaller
 build/

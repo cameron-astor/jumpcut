@@ -115,5 +115,5 @@ function getMediaPath() {
 }
 
 function getClipsAndMedia() {
-    
+    return app.project.activeSequence.videoTracks[0].clips;
 }
