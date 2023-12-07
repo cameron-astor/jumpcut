@@ -16,3 +16,5 @@ build/
 # Media files
 *.mp3
 *.mp4
+
+ffmpeg*

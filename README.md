@@ -17,7 +17,19 @@ Adobe is working on phasing out CEP extensions in favor of UXP extensions. This 
 As of November of 2023, the Premiere AI tools are still in beta. They are promising as a potential replacement for waveform-based jump cut automation, but they are still not at the point where I find them usable in my own workflow.
 
 ## Installation
+The extension is not currently available on Adobe's distribution platforms, so it must be installed manually.
 
+Clone the repository into your Adobe CEP extensions folder. \
+On Windows: `C:\Program Files (x86)\Common Files\Adobe\CEP\extensions`\
+On Mac: `~/Library/Application Support/Adobe/CEP/extensions`
+
+The Premiere API does not expose data on audio waveforms, so
+the extension relies on an external executable (compiled from `jumpcut.py` via `pyinstaller`) to perform jumpcut calculations. This executable in turn relies on [ffmpeg](https://ffmpeg.org/download.html) to read different codecs.
+If you already have `ffmpeg` installed on your system path, then the script will use your already installed version. If you don't have it installed, it will look for an `ffmpeg` binary in the `/dist/bin` directory of the extension. Future releases will come bundled with `ffmpeg`.
+
+It is worth noting that this executable must have permission to read the original media source files that are referenced in Premiere.
+
+Since the extension is not currently signed, it must be run in [debug mode](https://github.com/Adobe-CEP/Getting-Started-guides/blob/master/Client-side%20Debugging/readme.md#set-the-debug-mode).
 
 ## Manual
 #### Prerequisites
@@ -28,7 +40,7 @@ Currently, there are strict limitations on the configuration of clips and timeli
 Only the currently active sequence is analyzed. 
 Nested sequences on the timeline are not supported. Only clips in tracks Video 1 and Audio 1 are analyzed. Video and audio clips must be linked. Position and cropping of the clip in the timeline does not matter.  
 
-If there are multiple clips on the timeline, **only the first clip** will be analyzed and cut. For this reason, it is recommended to run the extension on sequences with only a single clip. If you need to jump cut only a portion of a timeline, or wish to jump cut content in an already crowded timeline, the current workflow is to save clips one at a time as nested sequences, and run jump cuts from within those nested sequences.
+To avoid undefined behavior, the extension currently will not run unless there is a single linked pair of video/audio clips on the timeline. If you need to jump cut only a portion of a timeline, or wish to jump cut content in an already crowded timeline, the current workflow is to save clips one at a time as nested sequences, and run jump cuts from within those nested sequences.
 
 Future development goals include more flexibility regarding these constraints, including logic for handling multiple clips and multiple tracks.
 

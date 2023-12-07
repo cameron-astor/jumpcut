@@ -11,6 +11,11 @@ h4 {
   white-space: nowrap; /* Ensures the label doesn't wrap */
 }
 
+label {
+  color: white;
+  font-family: Verdana, Geneva, Tahoma, sans-serif; /* Change the font family */
+}
+
 .headingdiv {
   display: flex;
   justify-content: flex-end;

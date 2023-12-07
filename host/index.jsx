@@ -1,5 +1,5 @@
 
-function jumpCutActiveSequence(silences) {
+function jumpCutActiveSequence(silences, backup) {
 
     app.enableQE();
 
@@ -12,9 +12,7 @@ function jumpCutActiveSequence(silences) {
     // Remove the flag
     silences.splice(silences.length - 1, 1);
 
-    alert(cutStartflag + "");
-
-    var MAKE_BACKUP = false;
+    var MAKE_BACKUP = eval(backup);
 
     var SEQUENCE = app.project.activeSequence;
     var QE_SEQUENCE = qe.project.getActiveSequence();

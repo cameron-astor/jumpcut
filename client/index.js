@@ -62,8 +62,12 @@ async function runJumpCut() {
   
     let silences = JSON.stringify(dataJSON['silences']);
   
+    let checkBox = document.getElementById("backupCheck");
+    let checked = checkBox.checked;
+    alert(checked);
+
     try {
-      await runPremiereJumpCut(silences);
+      await runPremiereJumpCut(silences, checked);
       alert("Success.");
     } catch (error) {
       alert("Failure executing jump cuts in Premiere.");
@@ -73,9 +77,9 @@ async function runJumpCut() {
   }
 }
 
-async function runPremiereJumpCut(silences) {
+async function runPremiereJumpCut(silences, backup) {
   return new Promise((resolve, reject) => {
-    csInterface.evalScript(`jumpCutActiveSequence("${silences}")`, (result) => {
+    csInterface.evalScript(`jumpCutActiveSequence("${silences}", "${backup}")`, (result) => {
       if (result) {
         resolve(result);
       } else {
@@ -128,9 +132,9 @@ async function asyncCallPythonJumpcut(exe_path, media_path, jumpcutParams) {
     // Normalize paths
     exe_path = path.normalize(exe_path);
     media_path = path.normalize(media_path);
-
+    let cwd = path.dirname(exe_path); // To run Python exe from its own directory
     // Call the Python jumpcut calculator
-    command_prompt = child_process.spawn(exe_path, [media_path, jumpcutParams]);
+    command_prompt = child_process.spawn(exe_path, [media_path, jumpcutParams], { cwd });
 
     let outputData = "";
 

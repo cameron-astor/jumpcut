@@ -2,7 +2,23 @@ from pydub import AudioSegment, silence
 import argparse
 import os
 import json
+import sys
+import subprocess
 import logging
+
+def is_ffmpeg_installed():
+    try:
+        # Run "ffmpeg -version" command and suppress output
+        subprocess.run(["ffmpeg", "-version"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+        return True  # ffmpeg command was successful
+    except OSError as e:
+        return False  # ffmpeg not installed
+
+if not is_ffmpeg_installed(): # If ffmpeg is not on the PATH, check for it in the extension /bin folder
+    if os.name == 'nt': # Windows
+        AudioSegment.converter = "./bin/ffmpeg.exe"
+    else:
+        AudioSegment.converter = "./bin/ffmpeg"
 
 # logging.basicConfig(filename='C:\Program Files (x86)\Common Files\Adobe\CEP\extensions\jumpcut\jumpcutpy.log', filemode='w')
 # logging.getLogger().setLevel(logging.DEBUG)
