@@ -4,10 +4,8 @@ import os
 import json
 import logging
 
-# TODO 
-# Relative path here. The problem is that the script is called by Premiere which could be anywhere.
 logging.basicConfig(filename='C:\Program Files (x86)\Common Files\Adobe\CEP\extensions\jumpcut\jumpcutpy.log', filemode='w')
-logging.getLogger().setLevel(logging.INFO)
+logging.getLogger().setLevel(logging.DEBUG)
 
 parser = argparse.ArgumentParser()
 parser.add_argument("path")
@@ -19,7 +17,10 @@ jumpcut_params = { # Default parameters based on the Premiere extension GUI slid
     'silenceCutoff': -80,
     'removeOver': 1000,
     'keepOver': 300,
-    'padding': 500
+    'padding': 500,
+    'in': None, 
+    'out': None,
+    'start': None
 }
 
 if args.jumpcutparams: # If parameters are passed, overwrite the defaults.
@@ -33,6 +34,9 @@ THRESHOLD = int(jumpcut_params['silenceCutoff'])
 PADDING = int(jumpcut_params['padding'])
 MIN_SILENCE_LENGTH = int(jumpcut_params['removeOver'])
 KEEP_OVER = int(jumpcut_params['keepOver'])
+INPOINT = int(jumpcut_params['in'])
+OUTPOINT = int(jumpcut_params['out'])
+START = int(jumpcut_params['start'])
 
 # Other parameters not controlled by the GUI
 SEEK_STEP = 50
@@ -45,17 +49,15 @@ FILE_TYPE = file_extension
 
 # Load file
 audio = AudioSegment.from_file(FILE_PATH, FILE_TYPE)
+# Crop audio based on in and out points
+audio = audio[INPOINT:OUTPOINT]
 CLIP_LENGTH = len(audio)
-
-# TODO
-# Crop audio based on in and out times on the Premiere timeline.
-
 
 silences = []
 try:
     silences = silence.detect_silence(audio, min_silence_len=MIN_SILENCE_LENGTH, seek_step=SEEK_STEP, silence_thresh=THRESHOLD)
 except Exception as e:
-    logging.error(e)
+    pass
 
 # Add padding
 to_remove = []
@@ -91,6 +93,18 @@ for i in range(0, len(silences), 2):
 silences = cleaned_silences
 
 # Convert to seconds for Premiere
-silences = [[s[0]/1000, s[1]/1000] for s in silences]
+silences = [[s[0]/1000 + START/1000, s[1]/1000 + START/1000] for s in silences]
+
+# Add a flag at the end for the Premiere script to know whether the silences line up
+# with the beginning of the clip or not.
+logging.debug(silences[0][0])
+logging.debug(START/1000)
+if silences[0][0] == START/1000:
+    silences.append(1)
+else:
+    silences.append(0)
+
+logging.debug(jumpcut_params)
+logging.debug(silences)
 
 print(json.dumps({"silences": silences}))

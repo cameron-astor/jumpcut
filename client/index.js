@@ -2,53 +2,75 @@ const fs = require('fs');
 const path = require('path');
 const child_process = require('child_process');
 
-const EXE_PATH = "C:/Program Files (x86)/Common Files/Adobe/CEP/extensions/jumpcut/dist/jumpcut.exe";
-
 let csInterface = new CSInterface();
 let operating_system = "WIN" // Default to Windows
 initFrontend();
 init();
+
+// Name of executable file varies by OS
+var EXE_NAME = "";
+if (operating_system == "WIN")
+{
+  EXE_NAME = "jumpcut.exe";
+} else {
+  EXE_NAME = "jumpcut";
+}
+var EXE_PATH = path.join(path.normalize(csInterface.getSystemPath(SystemPath.EXTENSION)), "/dist/" + EXE_NAME);
 
 async function init() {
   operating_system = await getOS();
 }
 
 async function runJumpCut() {
-  let mediaPath = await asyncGetMediaPath();
-  let jumpcutParams = getJumpcutParams();
-  let jumpcutData = "";
+  var isValid = await checkTimelineValidity() // Check that current prerequisites for jumpcuts are met.
+  if (isValid === "true")
+  {
+    let mediaPath = await asyncGetMediaPath();
 
-  // Run the Python script to calculate jump cut locations.
-  try {
-    jumpcutData = await asyncCallPythonJumpcut(EXE_PATH, mediaPath, jumpcutParams);
-    alert("Python script successful.");
-  } catch (error) {
-    alert("Failure executing Python script: " + error);
+    let jumpcutParams = getJumpcutParams();
+    let inoutpoints = await asyncGetInOutStartPoints();
+    inoutpoints = JSON.parse(inoutpoints);
+    jumpcutParams = JSON.parse(jumpcutParams);
+    jumpcutParams["in"] = inoutpoints["in"];
+    jumpcutParams["out"] = inoutpoints["out"];
+    jumpcutParams["start"] = inoutpoints["start"];
+    jumpcutParams = JSON.stringify(jumpcutParams);
+
+    let jumpcutData = "";
+  
+    // Run the Python script to calculate jump cut locations.
+    try {
+      jumpcutData = await asyncCallPythonJumpcut(EXE_PATH, mediaPath, jumpcutParams);
+      alert("Python script successful.");
+    } catch (error) {
+      alert("Failure executing Python script: " + error);
+    }
+  
+    // Prepare data to send to ExtendScript.
+    let dataJSON = ""
+    try {
+      dataJSON = JSON.parse(jumpcutData);
+    } catch (error) {
+      alert(error);
+    }
+  
+    // If no silences were returned, alert the user and exit.
+    if (dataJSON['silences'].length === 0) { 
+      alert("No silences detected.");
+      return;
+    }
+  
+    let silences = JSON.stringify(dataJSON['silences']);
+  
+    try {
+      await runPremiereJumpCut(silences);
+      alert("Success.");
+    } catch (error) {
+      alert("Failure executing jump cuts in Premiere.");
+    }
+  } else {
+    alert ("Timeline prerequisites not met. There must be a single linked video/audio pair on tracks V1 and A1.");
   }
-
-  // Prepare data to send to ExtendScript.
-  let dataJSON = ""
-  try {
-    dataJSON = JSON.parse(jumpcutData);
-  } catch (error) {
-    alert(error);
-  }
-
-  // If no silences were returned, alert the user and exit.
-  if (dataJSON['silences'].length === 0) { 
-    alert("No silences detected.");
-    return;
-  }
-
-  let silences = JSON.stringify(dataJSON['silences']);
-
-  try {
-    await runPremiereJumpCut(silences);
-    alert("Success.");
-  } catch (error) {
-    alert("Failure executing jump cuts in Premiere.");
-  }
-
 }
 
 async function runPremiereJumpCut(silences) {
@@ -72,6 +94,27 @@ async function asyncGetMediaPath() {
         resolve(result);
       } else {
         reject("Error getting media path.");
+      }
+    });
+  });
+}
+
+async function checkTimelineValidity() {
+  return new Promise((resolve, reject) => {
+    csInterface.evalScript("checkOneLinkedClipPair()", (result) => {
+      resolve(result);
+    });
+  });
+}
+
+async function asyncGetInOutStartPoints()
+{
+  return new Promise((resolve, reject) => {
+    csInterface.evalScript(`getInOutStartPoints()`, (result) => {
+      if (result) {
+        resolve(result);
+      } else {
+        reject("Error getting in and out points.");
       }
     });
   });

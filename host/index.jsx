@@ -5,11 +5,21 @@ function jumpCutActiveSequence(silences) {
 
     silences = eval(silences); // convert inputs back to arrays
 
+    // Get the flag that indicates whether
+    // the clip starts with silence or not.
+    var cutStartflag = silences[silences.length - 1];
+
+    // Remove the flag
+    silences.splice(silences.length - 1, 1);
+
+    alert(cutStartflag + "");
+
     var MAKE_BACKUP = false;
 
     var SEQUENCE = app.project.activeSequence;
     var QE_SEQUENCE = qe.project.getActiveSequence();
-    var VIDEO_TRACK = 0;
+
+    var VIDEO_TRACK = 0; // For now, default to V1 and A1 only.
     var AUDIO_TRACK = 0;
 
     var time = new Time();
@@ -21,23 +31,27 @@ function jumpCutActiveSequence(silences) {
 
     // Perform jump cuts with razor tool
     // This requires the QE version of the sequence.
-    for (var i = 0; i < silences.length; i++) {
-        silence_range = silences[i];
-        for (var j = 0; j < silence_range.length; j++) {
+    try {
+        for (var i = 0; i < silences.length; i++) {
+            silence_range = silences[i];
+            for (var j = 0; j < silence_range.length; j++) {
 
-            time.seconds = silence_range[j];
-            var timecode = time.getFormatted(SEQUENCE.getSettings().videoFrameRate, app.project.activeSequence.getSettings().videoDisplayFormat);
-            
-            QE_SEQUENCE.getVideoTrackAt(VIDEO_TRACK).razor(timecode);
-            QE_SEQUENCE.getAudioTrackAt(AUDIO_TRACK).razor(timecode);
+                time.seconds = silence_range[j];
+                var timecode = time.getFormatted(SEQUENCE.getSettings().videoFrameRate, app.project.activeSequence.getSettings().videoDisplayFormat);
+
+                QE_SEQUENCE.getVideoTrackAt(VIDEO_TRACK).razor(timecode);
+                QE_SEQUENCE.getAudioTrackAt(AUDIO_TRACK).razor(timecode);
+            }
         }
+    } catch (error) {
+        alert(error);
     }
 
     // Remove silences.
     // If silences begins at 0 seconds, start removing from element 0 of clips array. Otherwise, start from element 1.
     // Alternate until reaching the end.
     var startingIndex;
-    if (silences[0][0] === 0) {
+    if (cutStartflag === 1) {
         startingIndex = 0;
     } else {
         startingIndex = 1;
@@ -110,10 +124,41 @@ function getNonEmptyTrackItems(type, SEQUENCE, VIDEO_TRACK, AUDIO_TRACK) {
 function getMediaPath() {
     var sequence = app.project.activeSequence;
     var track1 = sequence.videoTracks[0];
-    clip = track1.clips[0];
+    clip = track1.clips[0]; // For now, we are dealing only with one clip.
     return clip.projectItem.getMediaPath();
 }
 
-function getClipsAndMedia() {
-    return app.project.activeSequence.videoTracks[0].clips;
+// Returns the in and out points of clip[0] on track V1.
+// The in and out points are relative to the base media.
+// The start point is relative to the timeline. We need it for offsetting
+// the silences correctly in Python.
+function getInOutStartPoints()
+{
+    var clip = app.project.activeSequence.videoTracks[0].clips[0];
+    var inPoint = clip.inPoint.seconds;
+    var outPoint = clip.outPoint.seconds;
+    var start = clip.start.seconds;
+    var result = '{"in": ' + inPoint + ', "out": ' + outPoint + ', "start": ' + start + '}';
+    return result;
+}
+
+// Enforces jumpcut prerequisites.
+// There must be only one clip in the timeline.
+// That clip must be a linked pair of audio and video.
+function checkOneLinkedClipPair() {
+    if (app.project.activeSequence.videoTracks[0].clips.length != 1)
+    {
+        return false; // Failed conditions. More than one or no video clips.
+    }
+
+    if (app.project.activeSequence.audioTracks[0].clips.length != 1)
+    {
+        return false;
+    }
+
+    if (app.project.activeSequence.videoTracks[0].clips[0].getLinkedItems().length != 2)
+    {
+        return false; // Linking not valid
+    }
+    return true;
 }
