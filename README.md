@@ -34,6 +34,7 @@ Future development goals include more flexibility regarding these constraints, i
 
 #### Options
 ![](img/openjumpcut_ui.png)
+
 There are four jump cut parameters currently supported.
 
 **Cutoff:**
@@ -42,10 +43,10 @@ This is the value below which a clip is considered silent. Due to difficulties w
 **Minimum Silence Length:**
 If a silent portion of a clip is shorter than this value, it will be ignored.
 
-**Minimum Segment Length**
+**Minimum Segment Length:**
 If a non-silent portion of a clip is shorter than this value, it will be considered silent.
 
-**Padding**
+**Padding:**
 Adds a buffer of silence around areas where sliences have been removed.
 
 ### Known issues

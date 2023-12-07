@@ -4,8 +4,8 @@ import os
 import json
 import logging
 
-logging.basicConfig(filename='C:\Program Files (x86)\Common Files\Adobe\CEP\extensions\jumpcut\jumpcutpy.log', filemode='w')
-logging.getLogger().setLevel(logging.DEBUG)
+# logging.basicConfig(filename='C:\Program Files (x86)\Common Files\Adobe\CEP\extensions\jumpcut\jumpcutpy.log', filemode='w')
+# logging.getLogger().setLevel(logging.DEBUG)
 
 parser = argparse.ArgumentParser()
 parser.add_argument("path")
@@ -97,14 +97,14 @@ silences = [[s[0]/1000 + START/1000, s[1]/1000 + START/1000] for s in silences]
 
 # Add a flag at the end for the Premiere script to know whether the silences line up
 # with the beginning of the clip or not.
-logging.debug(silences[0][0])
-logging.debug(START/1000)
+# logging.debug(silences[0][0])
+# logging.debug(START/1000)
 if silences[0][0] == START/1000:
     silences.append(1)
 else:
     silences.append(0)
 
-logging.debug(jumpcut_params)
-logging.debug(silences)
+# logging.debug(jumpcut_params)
+# logging.debug(silences)
 
 print(json.dumps({"silences": silences}))
