@@ -6,30 +6,49 @@ import sys
 import subprocess
 import logging
 
-logging.basicConfig(filename='jumpcutpy.log')
+log_format = '%(asctime)s - %(name)s - %(levelname)s - %(message)s (Line: %(lineno)d)'
+logging.basicConfig(filename='jumpcutpy.log', format=log_format)
 logging.getLogger().setLevel(logging.DEBUG)
 
 logging.debug("Running Python executable.")
 
-def is_ffmpeg_installed():
-    try:
-        # Run "ffmpeg -version" command and suppress output
-        subprocess.run(["ffmpeg", "-version"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-        subprocess.run(["ffprobe", "-version"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-        return True  # ffmpeg command was successful
-    except OSError as e:
-        logging.debug(e)
-        return False  # ffmpeg not installed
+# try:
+#     # Relative paths to ffmpeg and ffprobe binaries, relative to the script's directory
+#     relative_ffmpeg_bin = '/bin/ffmpeg'
+#     relative_ffprobe_bin = '/bin/ffprobe'
 
-logging.debug(is_ffmpeg_installed())
+#     # Get the absolute path of the script's directory
+#     script_dir = os.path.dirname(os.path.abspath(__file__))
 
-if not is_ffmpeg_installed(): # If ffmpeg is not on the PATH, check for it in the extension /bin folder
-    if os.name == 'nt': # Windows
-        AudioSegment.converter = "./bin/ffmpeg.exe"
-        AudioSegment.ffprobe = "./bin/ffprobe.exe"
-    else:
-        AudioSegment.converter = "./bin/ffmpeg"
-        AudioSegment.ffprobe = "./bin/ffprobe"
+#     # Combine script directory with relative paths to get absolute paths
+#     absolute_ffmpeg_bin = os.path.join(script_dir, relative_ffmpeg_bin)
+#     absolute_ffprobe_bin = os.path.join(script_dir, relative_ffprobe_bin)
+
+#     # Get the current PATH
+#     original_path = os.environ.get('PATH')
+
+#     # Add both ffmpeg and ffprobe binary paths to the PATH
+#     os.environ['PATH'] = f"{absolute_ffmpeg_bin}:{absolute_ffprobe_bin}:{original_path}"
+# except Exception as e:
+#     logging.debug(e)
+
+# def is_ffmpeg_installed():
+#     try:
+#         # Run "ffmpeg -version" command and suppress output
+#         subprocess.run(["ffmpeg", "-version"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+#         return True  # ffmpeg command was successful
+#     except OSError as e:
+#         logging.debug(e)
+#         return False  # ffmpeg not installed
+
+# logging.debug(is_ffmpeg_installed())
+# logging.debug(os.getcwd())
+
+# if not is_ffmpeg_installed(): # If ffmpeg is not on the PATH, check for it in the extension /bin folder
+#     if os.name == 'nt': # Windows
+#         AudioSegment.converter = "./bin/ffmpeg.exe"
+#     else:
+#         AudioSegment.converter = "./bin/ffmpeg"
 
 parser = argparse.ArgumentParser()
 parser.add_argument("path")

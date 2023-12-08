@@ -21,11 +21,11 @@ The extension is not currently available on Adobe's distribution platforms, so i
 
 Clone the repository into your Adobe CEP extensions folder. \
 On Windows: `C:\Program Files (x86)\Common Files\Adobe\CEP\extensions`\
-On Mac: `~/Library/Application Support/Adobe/CEP/extensions`
 
 The Premiere API does not expose data on audio waveforms, so
-the extension relies on an external executable (compiled from `jumpcut.py` via `pyinstaller`) to perform jumpcut calculations. This executable in turn relies on [ffmpeg](https://ffmpeg.org/download.html) to read different codecs.
-If you already have `ffmpeg` installed on your system path, then the script will use your already installed version. If you don't have it installed, it will look for an `ffmpeg` binary in the `/dist/bin` directory of the extension. Future releases will come bundled with `ffmpeg`.
+the extension relies on an external executable (compiled from `jumpcut.py` via `pyinstaller`) to perform jumpcut calculations. This executable in turn relies on [ffmpeg](https://ffmpeg.org/download.html) to read different codecs. `ffmpeg` must be accessible on your system's PATH.
+
+Due to issues with `ffmpeg`, MacOS is currently unsupported.
 
 It is also worth noting that this executable must have permission to read the original media source files that are referenced in Premiere.
 
