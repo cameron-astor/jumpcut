@@ -27,9 +27,9 @@ The Premiere API does not expose data on audio waveforms, so
 the extension relies on an external executable (compiled from `jumpcut.py` via `pyinstaller`) to perform jumpcut calculations. This executable in turn relies on [ffmpeg](https://ffmpeg.org/download.html) to read different codecs.
 If you already have `ffmpeg` installed on your system path, then the script will use your already installed version. If you don't have it installed, it will look for an `ffmpeg` binary in the `/dist/bin` directory of the extension. Future releases will come bundled with `ffmpeg`.
 
-It is worth noting that this executable must have permission to read the original media source files that are referenced in Premiere.
+It is also worth noting that this executable must have permission to read the original media source files that are referenced in Premiere.
 
-Since the extension is not currently signed, it must be run in [debug mode](https://github.com/Adobe-CEP/Getting-Started-guides/blob/master/Client-side%20Debugging/readme.md#set-the-debug-mode).
+Since the extension is not currently signed, it must be run in [debug mode](https://github.com/Adobe-CEP/Samples/tree/master/PProPanel). See section 2: "Loading of Unsigned Panels".
 
 ## Manual
 #### Prerequisites

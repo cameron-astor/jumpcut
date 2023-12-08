@@ -1,0 +1,1 @@
+Place ffmpeg and ffprobe binaries for your platform in this folder.

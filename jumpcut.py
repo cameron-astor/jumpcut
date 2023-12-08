@@ -6,22 +6,30 @@ import sys
 import subprocess
 import logging
 
+logging.basicConfig(filename='jumpcutpy.log')
+logging.getLogger().setLevel(logging.DEBUG)
+
+logging.debug("Running Python executable.")
+
 def is_ffmpeg_installed():
     try:
         # Run "ffmpeg -version" command and suppress output
         subprocess.run(["ffmpeg", "-version"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+        subprocess.run(["ffprobe", "-version"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
         return True  # ffmpeg command was successful
     except OSError as e:
+        logging.debug(e)
         return False  # ffmpeg not installed
+
+logging.debug(is_ffmpeg_installed())
 
 if not is_ffmpeg_installed(): # If ffmpeg is not on the PATH, check for it in the extension /bin folder
     if os.name == 'nt': # Windows
         AudioSegment.converter = "./bin/ffmpeg.exe"
+        AudioSegment.ffprobe = "./bin/ffprobe.exe"
     else:
         AudioSegment.converter = "./bin/ffmpeg"
-
-# logging.basicConfig(filename='C:\Program Files (x86)\Common Files\Adobe\CEP\extensions\jumpcut\jumpcutpy.log', filemode='w')
-# logging.getLogger().setLevel(logging.DEBUG)
+        AudioSegment.ffprobe = "./bin/ffprobe"
 
 parser = argparse.ArgumentParser()
 parser.add_argument("path")
@@ -63,17 +71,22 @@ file_extension = os.path.splitext(args.path)[1].replace('.', '')
 FILE_PATH = args.path
 FILE_TYPE = file_extension
 
-# Load file
-audio = AudioSegment.from_file(FILE_PATH, FILE_TYPE)
-# Crop audio based on in and out points
-audio = audio[INPOINT:OUTPOINT]
-CLIP_LENGTH = len(audio)
+try:
+    # Load file
+    audio = AudioSegment.from_file(FILE_PATH, FILE_TYPE)
+    # Crop audio based on in and out points
+    audio = audio[INPOINT:OUTPOINT]
+    CLIP_LENGTH = len(audio)
+except Exception as e:
+    logging.debug(e)
+    raise
 
 silences = []
 try:
     silences = silence.detect_silence(audio, min_silence_len=MIN_SILENCE_LENGTH, seek_step=SEEK_STEP, silence_thresh=THRESHOLD)
 except Exception as e:
-    pass
+    logging.debug(e)
+    raise
 
 # Add padding
 to_remove = []

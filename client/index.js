@@ -3,7 +3,7 @@ const path = require('path');
 const child_process = require('child_process');
 
 let csInterface = new CSInterface();
-let operating_system = "WIN" // Default to Windows
+let operating_system = getOS();
 initFrontend();
 init();
 
@@ -45,7 +45,7 @@ async function runJumpCut() {
     } catch (error) {
       alert("Failure executing Python script: " + error);
     }
-  
+
     // Prepare data to send to ExtendScript.
     let dataJSON = ""
     try {
@@ -133,8 +133,13 @@ async function asyncCallPythonJumpcut(exe_path, media_path, jumpcutParams) {
     exe_path = path.normalize(exe_path);
     media_path = path.normalize(media_path);
     let cwd = path.dirname(exe_path); // To run Python exe from its own directory
-    // Call the Python jumpcut calculator
-    command_prompt = child_process.spawn(exe_path, [media_path, jumpcutParams], { cwd });
+
+    try {
+      // Call the Python jumpcut calculator
+      command_prompt = child_process.spawn(exe_path, [media_path, jumpcutParams], { cwd });
+    } catch (error) {
+      alert(error);
+    }
 
     let outputData = "";
 
